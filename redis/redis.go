@@ -8,7 +8,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func NewRedisClient(init bool) (*redis.Client, error) {
+func NewRedisClient() (*redis.Client, error) {
 
 	var (
 		Network  string
