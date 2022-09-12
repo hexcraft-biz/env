@@ -178,7 +178,7 @@ func (e *Prototype) MysqlConnect(typ, user, password, host, port, name, params s
 	}
 }
 
-func (e *Prototype) MysqlDBInit(sqlDir string) error {
+func (e *Prototype) MysqlDBInit(sqlDir string, sortedFiles []string) error {
 	db, err := e.MysqlConnectWithMode(true)
 	defer db.Close()
 	if err != nil {
@@ -191,21 +191,31 @@ func (e *Prototype) MysqlDBInit(sqlDir string) error {
 		db.Exec(`USE ` + e.DBName + `;`)
 	}
 
-	if err := filepath.Walk(sqlDir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		} else if info.IsDir() || filepath.Ext(path) != ".sql" {
-			return nil
+	if len(sortedFiles) > 0 {
+		for i := range sortedFiles {
+			if err = execSqlFromFile(db, sqlDir+sortedFiles[i]); err != nil {
+				break
+			}
 		}
+	} else {
+		err = filepath.Walk(sqlDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			} else if info.IsDir() || filepath.Ext(path) != ".sql" {
+				return nil
+			}
 
-		if data, err := os.ReadFile(path); err != nil {
-			return err
-		} else if _, err := db.Exec(string(data)); err != nil {
-			fmt.Println(err.Error())
-		}
+			return execSqlFromFile(db, path)
+		})
+	}
 
-		return nil
-	}); err != nil {
+	return err
+}
+
+func execSqlFromFile(db *sqlx.DB, path string) error {
+	if data, err := os.ReadFile(path); err != nil {
+		return err
+	} else if _, err := db.Exec(string(data)); err != nil {
 		return err
 	}
 
