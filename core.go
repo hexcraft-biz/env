@@ -185,6 +185,13 @@ func (e *Prototype) MysqlDBInit(sqlDir string, sortedFiles []string) error {
 		return err
 	}
 
+	hasDB := false
+	if err := db.Get(&hasDB, `SELECT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?);`, e.DBName); err != nil {
+		return err
+	} else if hasDB {
+		return nil
+	}
+
 	if _, err := db.Exec(`CREATE DATABASE IF NOT EXISTS ` + e.DBName + ` COLLATE 'utf8mb4_unicode_ci' CHARACTER SET 'utf8mb4';`); err != nil {
 		return err
 	} else {
