@@ -2,13 +2,14 @@ package env
 
 import (
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
 const (
@@ -200,7 +201,7 @@ func (e *Prototype) MysqlDBInit(sqlDir string, sortedFiles []string) error {
 
 	if len(sortedFiles) > 0 {
 		for i := range sortedFiles {
-			if err = execSqlFromFile(db, sqlDir+sortedFiles[i]); err != nil {
+			if _, err = sqlx.LoadFile(db, filepath.Join(sqlDir, sortedFiles[i])); err != nil {
 				break
 			}
 		}
@@ -212,19 +213,10 @@ func (e *Prototype) MysqlDBInit(sqlDir string, sortedFiles []string) error {
 				return nil
 			}
 
-			return execSqlFromFile(db, path)
+			_, err = sqlx.LoadFile(db, path)
+			return err
 		})
 	}
 
 	return err
-}
-
-func execSqlFromFile(db *sqlx.DB, path string) error {
-	if data, err := os.ReadFile(path); err != nil {
-		return err
-	} else if _, err := db.Exec(string(data)); err != nil {
-		return err
-	}
-
-	return nil
 }
