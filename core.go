@@ -213,19 +213,10 @@ func (e *Prototype) MysqlDBInit(sqlDir string, sortedFiles []string) error {
 				return nil
 			}
 
-			return ExecFromFile(db, path)
+			_, err = sqlx.LoadFile(db, path)
+			return err
 		})
 	}
 
 	return err
-}
-
-func ExecFromFile(db *sqlx.DB, path string) error {
-	if data, err := os.ReadFile(path); err != nil {
-		return err
-	} else if _, err := db.Exec(string(data)); err != nil {
-		return err
-	}
-
-	return nil
 }
