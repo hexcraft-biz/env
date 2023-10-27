@@ -11,6 +11,13 @@ import (
 // ================================================================
 type Face struct {
 	*face.Recognizer
+	DirFaceRecognizationModels string
+}
+
+func NewFace() (*Face, error) {
+	return &Face{
+		DirFaceRecognizationModels: os.Getenv("DIR_FACE_RECOGNIZATION_MODELS"),
+	}, nil
 }
 
 // ================================================================
@@ -19,7 +26,7 @@ type Face struct {
 func (e *Face) Open() error {
 	var err error
 	e.Close()
-	e.Recognizer, err = face.NewRecognizer(os.Getenv("DIR_FACE_RECOGNIZATION_MODELS"))
+	e.Recognizer, err = face.NewRecognizer(e.DirFaceRecognizationModels)
 	return err
 }
 
