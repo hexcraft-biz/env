@@ -95,14 +95,14 @@ func NewMysql() (*Mysql, error) {
 // ================================================================
 //
 // ================================================================
-func (e *Mysql) Connect() error {
+func (e *Mysql) Open() error {
 	var err error
-	e.Disconnect()
+	e.Close()
 	e.DB, err = e.connectWithMode(false)
 	return err
 }
 
-func (e *Mysql) Disconnect() {
+func (e *Mysql) Close() {
 	if e.DB != nil {
 		e.DB.Close()
 	}
@@ -175,7 +175,3 @@ func (e Mysql) connectWithMode(isInit bool) (*sqlx.DB, error) {
 		return db, nil
 	}
 }
-
-// ================================================================
-//
-// ================================================================
