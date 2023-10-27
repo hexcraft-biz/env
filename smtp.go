@@ -1,4 +1,4 @@
-package smtp
+package env
 
 import (
 	"fmt"
@@ -19,7 +19,7 @@ type Smtp struct {
 	DisplayEmail string
 }
 
-func NewSmtp() *Smtp {
+func NewSmtp() (*Smtp, error) {
 	return &Smtp{
 		Host:         os.Getenv("SMTP_HOST"),
 		Port:         os.Getenv("SMTP_PORT"),
@@ -27,9 +27,12 @@ func NewSmtp() *Smtp {
 		Password:     os.Getenv("SMTP_PASSWORD"),
 		DisplayName:  os.Getenv("SMTP_DISPLAY_NAME"),
 		DisplayEmail: os.Getenv("SMTP_DISPLAY_EMAIL"),
-	}
+	}, nil
 }
 
+// ================================================================
+//
+// ================================================================
 func (e Smtp) SendHTMLEmail(to []string, subject, body string) error {
 	server := e.Host + ":" + e.Port
 	auth := smtp.PlainAuth("", e.Username, e.Password, e.Host)
