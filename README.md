@@ -53,3 +53,9 @@ JWT_SIGNING_METHOD=HS512 # Values: HS256, HS384, HS512
 ```bash
 DIR_FACE_RECOGNIZATION_MODELS=/path/to/the/models
 ```
+
+## twsms
+```bash
+TWSMS_USERNAME=username
+TWSMS_PASSWORD=password
+```
