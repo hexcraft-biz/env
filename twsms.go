@@ -72,7 +72,7 @@ func (r TwSmsSendApiResp) Error() error {
 		case code >= 99998:
 			return ErrServiceUnavailable
 		default:
-			return ErrInternalServerError
+			return ErrServiceUnavailable
 		}
 	}
 }
